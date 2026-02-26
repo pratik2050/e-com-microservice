@@ -1,0 +1,104 @@
+package com.pratifolio.product_service.service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.*;
+import java.util.function.Function;
+
+@Service
+public class JwtService {
+    String key = "2f709d92ec646e03e26341cb885f075e3762fd5c9e10679b73d2b160aef1eb6e";
+    byte[] bytes = key.getBytes(StandardCharsets.UTF_8);
+    private final String secretKey = Base64.getEncoder().encodeToString(bytes);
+
+//    public JwtService(){
+//        secretKey = generateSecretKey();
+//    }
+
+//    public String generateSecretKey() {
+//        try {
+//            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//            SecretKey secretKey = keyGen.generateKey();
+//            System.out.println("Secret Key : " + secretKey.toString());
+//            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+//            String key = "2f709d92ec646e03e26341cb885f075e3762fd5c9e10679b73d2b160aef1eb6e";
+//            byte[] bytes = key.getBytes(StandardCharsets.UTF_8);
+//            return Base64.getEncoder().encodeToString(bytes);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error generating secret key", e);
+//        }
+//    }
+//
+//    public String generateToken(String username) {
+//        Map<String, Object> claims = new HashMap<>();
+//
+//        return Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(username)
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*15))
+//                .signWith(getKey(), SignatureAlgorithm.HS256)
+//                .compact();
+//    }
+
+    private Key getKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractUserName(String token) {
+        // extract the username from jwt token
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build().parseClaimsJws(token).getBody();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            extractAllClaims(token);
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    public List<SimpleGrantedAuthority> extractAuthorities(String token) {
+        Claims claims = extractAllClaims(token);
+
+        Object rolesObject = claims.get("roles");
+
+        if (rolesObject instanceof List<?>) {
+
+            return ((List<?>) rolesObject)
+                    .stream()
+                    .map(role -> new SimpleGrantedAuthority(role.toString()))
+                    .toList();
+        }
+
+        return List.of();
+    }
+}
