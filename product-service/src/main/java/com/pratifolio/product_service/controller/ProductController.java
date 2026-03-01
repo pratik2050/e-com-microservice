@@ -1,6 +1,7 @@
 package com.pratifolio.product_service.controller;
 
 import com.pratifolio.product_service.model.Product;
+import com.pratifolio.product_service.model.dto.OrderRequest;
 import com.pratifolio.product_service.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,11 @@ public class ProductController {
     @DeleteMapping("deleteProduct/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable int id) {
         return productService.deleteProduct(id);
+    }
+
+    @PostMapping("order-product")
+    public ResponseEntity<?> orderProduct(@RequestBody OrderRequest orderRequest) {
+        return productService.placeOrder(orderRequest);
     }
 
 }

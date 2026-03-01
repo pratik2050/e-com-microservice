@@ -1,6 +1,5 @@
-package com.pratifolio.order_service.model.dto;
+package com.pratifolio.product_service.model.dto;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public record OrderResponse(

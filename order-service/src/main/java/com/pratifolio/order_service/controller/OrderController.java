@@ -1,7 +1,6 @@
 package com.pratifolio.order_service.controller;
 
 import com.pratifolio.order_service.model.dto.OrderRequest;
-import com.pratifolio.order_service.model.dto.OrderResponse;
 import com.pratifolio.order_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

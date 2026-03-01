@@ -14,7 +14,7 @@ public class OrderItem {
     private int productId;
     private int quantity;
 
-    private BigDecimal totalPrice;
+    private int totalPrice;
     @ManyToOne
     private Order order;
 
@@ -42,11 +42,11 @@ public class OrderItem {
         this.quantity = quantity;
     }
 
-    public BigDecimal getTotalPrice() {
+    public int getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
+    public void setTotalPrice(int totalPrice) {
         this.totalPrice = totalPrice;
     }
 

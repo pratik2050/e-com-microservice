@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-@Entity
+@Entity(name = "orders")
 public class Order {
 
     @Id
@@ -12,8 +12,7 @@ public class Order {
     private int id;
     @Column(unique = true)
     private String orderId;
-    private String customerName;
-    private String email;
+    private int customerId;
     private String status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -35,20 +34,12 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public int getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
     public String getStatus() {

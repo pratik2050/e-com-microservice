@@ -1,6 +1,9 @@
 package com.pratifolio.product_service.service;
 
+import com.pratifolio.product_service.feign.ProductInterface;
 import com.pratifolio.product_service.model.Product;
+import com.pratifolio.product_service.model.dto.OrderRequest;
+import com.pratifolio.product_service.model.dto.OrderResponse;
 import com.pratifolio.product_service.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepo productRepo;
+
+    @Autowired
+    private ProductInterface productInterface;
 
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> allProducts = productRepo.findAll();
@@ -61,5 +67,17 @@ public class ProductService {
         } catch (Exception e) {
             return new ResponseEntity<>("Error - Please try again | " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<OrderResponse> placeOrder(OrderRequest orderRequest) {
+        ResponseEntity<OrderResponse> response = productInterface.placeOrder(orderRequest);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            return ResponseEntity.ok(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatusCode())
+                .body(null);
+
     }
 }

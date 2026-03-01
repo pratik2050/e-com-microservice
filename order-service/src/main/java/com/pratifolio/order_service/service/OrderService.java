@@ -8,12 +8,13 @@ import com.pratifolio.order_service.model.dto.OrderRequest;
 import com.pratifolio.order_service.model.dto.OrderResponse;
 import com.pratifolio.order_service.repo.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -26,21 +27,16 @@ public class OrderService {
         Order order = new Order();
         String orderId = "ORD" + UUID.randomUUID().toString().substring(0,8).toUpperCase();
         order.setOrderId(orderId);
-        order.setCustomerName(orderRequest.customerName());
-        order.setEmail(orderRequest.email());
-        order.setStatus("PLACED");
+        order.setCustomerId(orderRequest.customerId());
+        order.setStatus("NEW");
 
         List<OrderItem> orderItems = new ArrayList<>();
 
         for (OrderItemRequest itemRequest : orderRequest.items()) {
-//            Product product = productRepo.findById(itemRequest.productId()).orElseThrow(() -> new RuntimeException("Product Not Found"));
-//
-//            product.setStockQuantity(product.getStockQuantity() - itemRequest.quantity());
-//            productRepo.save(product);
-
             OrderItem orderItem = OrderItem.builder()
+                    .productId(itemRequest.productId())
                     .quantity(itemRequest.quantity())
-                    .totalPrice(BigDecimal.valueOf(itemRequest.price()*itemRequest.quantity()))
+                    .totalPrice(itemRequest.price()*itemRequest.quantity())
                     .order(order)
                     .build();
 
@@ -50,28 +46,34 @@ public class OrderService {
 
         order.setOrderItems(orderItems);
 
-        Order savedOrder = orderRepo.save(order);
+        Random random = new Random();
+//        int paymentSuccess = random.nextInt(1, 4);
+        int paymentSuccess = 2;
 
-        List<OrderItemResponse> orderItemResponses = new ArrayList<>();
+        if (paymentSuccess == 2) {
+            order.setStatus("PLACED");
+            Order savedOrder = orderRepo.save(order);
+            List<OrderItemResponse> orderItemResponses = new ArrayList<>();
 
-        for (OrderItem itemResponse : order.getOrderItems()) {
-            OrderItemResponse orderItemResponse = new OrderItemResponse(
-                    itemResponse.getProductId(),
-                    itemResponse.getQuantity(),
-                    itemResponse.getTotalPrice()
+            for (OrderItem itemResponse : order.getOrderItems()) {
+                OrderItemResponse orderItemResponse = new OrderItemResponse(
+                        itemResponse.getProductId(),
+                        itemResponse.getQuantity(),
+                        itemResponse.getTotalPrice()
+                );
+
+                orderItemResponses.add(orderItemResponse);
+            }
+
+            OrderResponse orderResponse = new OrderResponse(
+                    savedOrder.getOrderId(),
+                    savedOrder.getCustomerId(),
+                    savedOrder.getStatus(),
+                    orderItemResponses
             );
 
-            orderItemResponses.add(orderItemResponse);
-        }
-
-        OrderResponse orderResponse = new OrderResponse(
-                savedOrder.getOrderId(),
-                savedOrder.getCustomerName(),
-                savedOrder.getEmail(),
-                savedOrder.getStatus(),
-                orderItemResponses
-        );
-
-        return null;
+            return new ResponseEntity<>(orderResponse, HttpStatus.OK);
+        } else
+            return new ResponseEntity<>("Error Please try again", HttpStatus.BAD_REQUEST);
     }
 }

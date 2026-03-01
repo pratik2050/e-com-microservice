@@ -1,9 +1,10 @@
-package com.pratifolio.order_service.model.dto;
+package com.pratifolio.product_service.model.dto;
 
 import java.util.List;
 
 public record OrderRequest(
         int customerId,
+        String email,
         List<OrderItemRequest> items
 ) {
 }

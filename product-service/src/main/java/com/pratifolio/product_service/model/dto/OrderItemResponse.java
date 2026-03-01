@@ -1,6 +1,4 @@
-package com.pratifolio.order_service.model.dto;
-
-import java.math.BigDecimal;
+package com.pratifolio.product_service.model.dto;
 
 public record OrderItemResponse(
         int productId,

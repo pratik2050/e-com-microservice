@@ -18,7 +18,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         security.csrf(customizer -> customizer.disable());
         security.authorizeHttpRequests(request -> request
-                .anyRequest().authenticated());
+                .anyRequest().permitAll());
+//                .anyRequest().authenticated());
         security.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         security.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return security.build();
