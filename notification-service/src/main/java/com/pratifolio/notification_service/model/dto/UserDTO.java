@@ -1,4 +1,4 @@
-package com.pratifolio.user_service.model;
+package com.pratifolio.notification_service.model.dto;
 
 public record UserDTO(
         String username,

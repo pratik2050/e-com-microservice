@@ -1,5 +1,6 @@
 package com.pratifolio.order_service.service;
 
+import com.pratifolio.order_service.config.RabbitConfig;
 import com.pratifolio.order_service.model.Order;
 import com.pratifolio.order_service.model.OrderItem;
 import com.pratifolio.order_service.model.dto.OrderItemRequest;
@@ -7,6 +8,7 @@ import com.pratifolio.order_service.model.dto.OrderItemResponse;
 import com.pratifolio.order_service.model.dto.OrderRequest;
 import com.pratifolio.order_service.model.dto.OrderResponse;
 import com.pratifolio.order_service.repo.OrderRepo;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,17 @@ public class OrderService {
 
     @Autowired
     private OrderRepo orderRepo;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    private void sendOrderPlacedEvent(OrderResponse orderResponse) {
+        rabbitTemplate.convertAndSend(
+                "ecom-order-fanout",
+                "",
+                orderResponse
+        );
+    }
 
     public ResponseEntity<?> placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -71,6 +84,8 @@ public class OrderService {
                     savedOrder.getStatus(),
                     orderItemResponses
             );
+
+            sendOrderPlacedEvent(orderResponse);
 
             return new ResponseEntity<>(orderResponse, HttpStatus.OK);
         } else

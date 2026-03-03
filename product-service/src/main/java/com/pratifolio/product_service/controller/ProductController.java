@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -19,7 +21,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping("getProduct/{id}")
+    @GetMapping("getFullProduct/{id}")
     public ResponseEntity<?> getProductById(@PathVariable int id) {
         return productService.getProductById(id);
     }
@@ -42,6 +44,11 @@ public class ProductController {
     @PostMapping("order-product")
     public ResponseEntity<?> orderProduct(@RequestBody OrderRequest orderRequest) {
         return productService.placeOrder(orderRequest);
+    }
+
+    @PostMapping("getProduct")
+    public ResponseEntity<?> getProductDTO(@RequestBody List<Integer> ids) {
+        return productService.getProductDTO(ids);
     }
 
 }

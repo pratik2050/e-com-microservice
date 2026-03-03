@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -41,6 +38,11 @@ public class UserController {
             return new ResponseEntity<>(jwtService.generateToken(user.getUsername()), HttpStatus.OK);
         else
             return new ResponseEntity<>("failed login", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("getUserDetails/{id}")
+    public ResponseEntity<?> getUserDetails(@PathVariable int id) {
+        return userService.getUserDetails(id);
     }
 
 }

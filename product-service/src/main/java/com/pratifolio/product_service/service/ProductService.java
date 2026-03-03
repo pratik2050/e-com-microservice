@@ -1,15 +1,17 @@
 package com.pratifolio.product_service.service;
 
-import com.pratifolio.product_service.feign.ProductInterface;
+import com.pratifolio.product_service.feign.OrderInterface;
 import com.pratifolio.product_service.model.Product;
 import com.pratifolio.product_service.model.dto.OrderRequest;
 import com.pratifolio.product_service.model.dto.OrderResponse;
+import com.pratifolio.product_service.model.dto.ProductDTO;
 import com.pratifolio.product_service.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,7 +21,7 @@ public class ProductService {
     private ProductRepo productRepo;
 
     @Autowired
-    private ProductInterface productInterface;
+    private OrderInterface productInterface;
 
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> allProducts = productRepo.findAll();
@@ -79,5 +81,22 @@ public class ProductService {
         return ResponseEntity.status(response.getStatusCode())
                 .body(null);
 
+    }
+
+    public ResponseEntity<List<ProductDTO>> getProductDTO(List<Integer> ids) {
+        List<ProductDTO> productDTOList = new ArrayList<>();
+
+        for (int i = 0; i < ids.size(); i++) {
+            Product product = productRepo.findById(ids.get(i)).get();
+
+            ProductDTO productDTO = new ProductDTO(
+                    product.getProductName(),
+                    product.getPrice()
+            );
+
+            productDTOList.add(productDTO);
+        }
+
+        return new ResponseEntity<>(productDTOList, HttpStatus.OK);
     }
 }

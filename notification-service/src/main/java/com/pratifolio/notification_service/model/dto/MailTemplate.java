@@ -1,4 +1,4 @@
-package com.pratifolio.notification_service.model;
+package com.pratifolio.notification_service.model.dto;
 
 public record MailTemplate(
         String to,

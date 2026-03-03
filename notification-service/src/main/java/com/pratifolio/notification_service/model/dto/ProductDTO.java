@@ -1,4 +1,4 @@
-package com.pratifolio.product_service.model.dto;
+package com.pratifolio.notification_service.model.dto;
 
 public record ProductDTO(
         String productName,

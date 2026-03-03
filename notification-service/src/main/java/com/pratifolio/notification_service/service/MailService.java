@@ -1,6 +1,6 @@
 package com.pratifolio.notification_service.service;
 
-import com.pratifolio.notification_service.model.MailTemplate;
+import com.pratifolio.notification_service.model.dto.MailTemplate;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.http.HttpStatus;

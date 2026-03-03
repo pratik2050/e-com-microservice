@@ -1,6 +1,7 @@
 package com.pratifolio.user_service.service;
 
 import com.pratifolio.user_service.model.User;
+import com.pratifolio.user_service.model.UserDTO;
 import com.pratifolio.user_service.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,16 @@ public class UserService {
         } catch (Exception e) {
              return new ResponseEntity<>("Error Creating User - Try Again", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<UserDTO> getUserDetails(int id) {
+        User user = userRepo.findById(id).get();
+
+        UserDTO userDTO = new UserDTO(
+                user.getUsername(),
+                user.getEmail()
+        );
+
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 }

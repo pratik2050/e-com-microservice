@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient("ORDER-SERVICE")
-public interface ProductInterface {
+public interface OrderInterface {
 
     @PostMapping("order/place-order")
     public ResponseEntity<OrderResponse> placeOrder(@RequestBody OrderRequest orderRequest);
