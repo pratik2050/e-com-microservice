@@ -11,6 +11,12 @@ spring:
       ddl-auto: update
     show-sql: true
 
+logging:
+  level:
+    org:
+      springframework:
+        cache: TRACE
+
 eureka:
   client:
     service-url:

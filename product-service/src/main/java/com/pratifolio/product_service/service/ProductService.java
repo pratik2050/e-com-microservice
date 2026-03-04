@@ -7,6 +7,10 @@ import com.pratifolio.product_service.model.dto.OrderResponse;
 import com.pratifolio.product_service.model.dto.ProductDTO;
 import com.pratifolio.product_service.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,12 +27,14 @@ public class ProductService {
     @Autowired
     private OrderInterface productInterface;
 
-    public ResponseEntity<List<Product>> getAllProducts() {
+    @Cacheable(value = "allProductCache", key = "allProducts")
+    public List<Product> getAllProducts() {
         List<Product> allProducts = productRepo.findAll();
 
-        return new ResponseEntity<>(allProducts, HttpStatus.OK);
+        return allProducts;
     }
 
+    @Cacheable(value = "productCache", key = "#id")
     public ResponseEntity<?> getProductById(int id) {
         if (productRepo.findById(id).isEmpty()) {
             return new ResponseEntity<>("Product Not Found", HttpStatus.BAD_REQUEST);
@@ -36,6 +42,14 @@ public class ProductService {
             return new ResponseEntity<Product>(productRepo.findById(id).get(), HttpStatus.OK);
     }
 
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "allProductCache", key = "allProducts")
+            },
+            put = {
+                    @CachePut(value = "productCache", key = "#product.id")
+            }
+    )
     public ResponseEntity<?> addProduct(Product product) {
         try {
             productRepo.save(product);
@@ -62,6 +76,7 @@ public class ProductService {
         }
     }
 
+    @CacheEvict(value = "allProductCache", key = "allProducts")
     public ResponseEntity<?> deleteProduct(int id) {
         try {
             productRepo.deleteById(id);

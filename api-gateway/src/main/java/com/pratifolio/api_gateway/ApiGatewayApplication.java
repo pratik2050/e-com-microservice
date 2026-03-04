@@ -17,13 +17,13 @@ public class ApiGatewayApplication {
 	public RouteLocator routerBuilder(RouteLocatorBuilder routeLocatorBuilder){
 		return routeLocatorBuilder.routes()
 				.route("user-service",r->r.path("/user/**")
-						.uri("http://localhost:8080/"))
+						.uri("lb://USER-SERVICE"))
 				.route("product-service",r->r.path("/product/**")
-						.uri("http://localhost:8081/"))
+						.uri("lb://PRODUCT-SERVICE"))
 				.route("order-service",r->r.path("/order/**")
-						.uri("http://localhost:8082"))
+						.uri("lb://ORDER-SERVICE"))
 				.route("notification-service",r->r.path("/notify/**")
-						.uri("http://localhost:8083"))
+						.uri("lb://NOTIFICATION-SERVICE"))
 				.build();
 	}
 

@@ -4,6 +4,7 @@ import com.pratifolio.product_service.model.Product;
 import com.pratifolio.product_service.model.dto.OrderRequest;
 import com.pratifolio.product_service.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,10 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("allProducts")
-    public ResponseEntity<?> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> allProducts = productService.getAllProducts();
+
+        return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
     @GetMapping("getFullProduct/{id}")
