@@ -27,7 +27,7 @@ public class ProductService {
     @Autowired
     private OrderInterface productInterface;
 
-    @Cacheable(value = "allProductCache", key = "allProducts")
+    @Cacheable(value = "allProductCache", key = "'allProducts'")
     public List<Product> getAllProducts() {
         List<Product> allProducts = productRepo.findAll();
 
@@ -35,27 +35,23 @@ public class ProductService {
     }
 
     @Cacheable(value = "productCache", key = "#id")
-    public ResponseEntity<?> getProductById(int id) {
-        if (productRepo.findById(id).isEmpty()) {
-            return new ResponseEntity<>("Product Not Found", HttpStatus.BAD_REQUEST);
-        } else
-            return new ResponseEntity<Product>(productRepo.findById(id).get(), HttpStatus.OK);
+    public Product getProductById(int id) {
+        return productRepo.findById(id).orElse(null);
     }
 
     @Caching(
             evict = {
-                    @CacheEvict(value = "allProductCache", key = "allProducts")
+                    @CacheEvict(value = "allProductCache", key = "'allProducts'")
             },
             put = {
-                    @CachePut(value = "productCache", key = "#product.id")
+                    @CachePut(value = "productCache", key = "#result.id")
             }
     )
-    public ResponseEntity<?> addProduct(Product product) {
+    public Product addProduct(Product product) {
         try {
-            productRepo.save(product);
-            return new ResponseEntity<>("Product Created", HttpStatus.CREATED);
+            return productRepo.save(product);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error - Please try again | " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return null;
         }
     }
 

@@ -10,6 +10,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  data:
+    redis:
+      host: 10.149.47.141
+      port: 6379
+  cache:
+    type: redis
 
 logging:
   level:

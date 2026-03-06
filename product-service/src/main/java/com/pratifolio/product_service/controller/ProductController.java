@@ -26,12 +26,22 @@ public class ProductController {
 
     @GetMapping("getFullProduct/{id}")
     public ResponseEntity<?> getProductById(@PathVariable int id) {
-        return productService.getProductById(id);
+        Product product = productService.getProductById(id);
+
+        if (product != null) {
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } else
+            return new ResponseEntity<>("Product Not Found - Try Again", HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("addProduct")
     public ResponseEntity<?> addProduct(@RequestBody Product product) {
-        return productService.addProduct(product);
+        Product addedProduct = productService.addProduct(product);
+
+        if (addedProduct != null) {
+            return new ResponseEntity<>(addedProduct, HttpStatus.CREATED);
+        } else
+            return new ResponseEntity<>("Failed to add product", HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("updateProduct")
